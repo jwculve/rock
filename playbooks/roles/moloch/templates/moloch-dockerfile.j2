@@ -1,0 +1,15 @@
+FROM centos:latest
+
+USER {{ rock_data_user }}
+WORKDIR {{ moloch_data_dir }}
+COPY etc/ etc/
+
+RUN yum -y update \
+ && yum -y install net-tools libpng bzip2 gcc-c++ expect \
+ && yum -y install https://files.molo.ch/builds/centos-7/moloch-{{ moloch_tag }}.x86_64.rpm \
+ && etc/auto_config_moloch
+# RUN /bin/bash -c "bin/moloch_add_user.sh assessor "Admin User" password --admin"
+# && db/db.pl {{ moloch_elastic_url }} init \
+# && bin/moloch_add_user.sh assessor "Admin User" password --admin
+
+EXPOSE {{ moloch_port }}

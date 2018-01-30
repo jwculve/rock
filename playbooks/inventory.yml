@@ -48,6 +48,13 @@ all:
     bro:
       children:
         master-servers:
+    moloch:
+      children:
+        sensors:
+
+    stenographer:
+#      children:
+#        sensors:
 
     master-servers:
 
@@ -80,6 +87,6 @@ all:
 
           hosts:
             rockserver3.lan:
-              ansible_hostname: rockserver3.lan
+              ansible_hostname: rocksecondary3.lan
               ansible_user: root
               ansible_connection: ssh
