@@ -22,16 +22,16 @@ all:
         nodes:
 
     kibana:
-#      children:
-#        master-servers:
+      children:
+        master-servers:
 
     elasticsearch:
-#      children:
-#        master-servers:
+      children:
+        master-servers:
 
     logstash:
-#      children:
-#        master-servers:
+      children:
+        master-servers:
 
     suricata:
       children:
