@@ -7,6 +7,7 @@ COPY etc/ etc/
 RUN yum -y update \
  && yum -y install net-tools libpng bzip2 gcc-c++ expect \
  && yum -y install https://files.molo.ch/builds/centos-7/moloch-{{ moloch_tag }}.x86_64.rpm \
+ && chmod {{ moloch_exec_mode }} etc/auto_config_moloch \
  && etc/auto_config_moloch
 # RUN /bin/bash -c "bin/moloch_add_user.sh assessor "Admin User" password --admin"
 # && db/db.pl {{ moloch_elastic_url }} init \
