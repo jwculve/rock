@@ -5,6 +5,7 @@
 
 - name: Verify Docker is present
   yum:
+<<<<<<< curell-kubernetes
     name: docker
     state: present
 
@@ -80,6 +81,13 @@
   command: kubeadm reset
   register: debug_output
   when: installed_packages is defined and not installed_packages.changed
+=======
+    name: docker-ce
+    state: present
+
+- name: Swap Off
+  command: swapoff --all
+>>>>>>> Implemented GlusterFS
 
 - name: Debug Output
   debug:
@@ -108,6 +116,69 @@
     - /etc/cni
   when: installed_packages is defined and not installed_packages.changed
 
+<<<<<<< curell-kubernetes
+- name: Reinstall Kubernetes Packages
+  yum:
+    name: "{{ item }}"
+=======
+- name: 'Pass bridged IPv4 traffic to iptables'
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    sysctl_set: yes
+    value: 1
+>>>>>>> Implemented GlusterFS
+    state: present
+  with_items:
+    - kubeadm
+    - kubelet
+    - kubectl
+  when: installed_packages is defined and not installed_packages.changed
+
+<<<<<<< curell-kubernetes
+- name: 'Stop Kubelet'
+=======
+- name: "Setup Kubernetes repo"
+  yum_repository:
+    baseurl: "{{ kubernetes_baseurl }}"
+    description: "Kubernetes YUM repo"
+    gpgcheck: true
+    gpgkey: "{{ kubernetes_gpgurl }}"
+    name: kubernetes
+
+- name: 'Install Kubernetes packages'
+  yum:
+    name: "{{ item }}"
+    state: 'installed'
+  with_items:
+    - "kubeadm"
+    - "kubelet"
+    - "kubectl"
+  register: installed_packages
+
+- name: Reset Kubernetes Cluster
+  command: kubeadm reset
+  when: not installed_packages.changed
+
+- name: Remove Kubernetes Packages to clear cache
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - kubeadm
+    - kubelet
+    - kubectl
+  when: not installed_packages.changed
+
+- name: Remove Artifacts
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /var/lib/cni
+    - /var/lib/kubelet
+    - /etc/cni
+  when: not installed_packages.changed
+
 - name: Reinstall Kubernetes Packages
   yum:
     name: "{{ item }}"
@@ -116,9 +187,10 @@
     - kubeadm
     - kubelet
     - kubectl
-  when: installed_packages is defined and not installed_packages.changed
+  when: not installed_packages.changed
 
-- name: 'Stop Kubelet'
+- name: 'Start Kubelet'
+>>>>>>> Implemented GlusterFS
   systemd:
     name: 'kubelet'
     state: 'stopped'
@@ -157,7 +229,11 @@
 
 - name: 'Init Kubernetes cluster'
   #shell: "kubeadm init --config {{ kube_dir }}/kubeadm.yml | grep 'kubeadm join --token'"
+<<<<<<< curell-kubernetes
   shell: "kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=true| grep 'kubeadm join --token'"
+=======
+  shell: "kubeadm init --pod-network-cidr=10.244.0.0/16 | grep 'kubeadm join --token'"
+>>>>>>> Implemented GlusterFS
   register: kube_join_cluster_cmd
   when: inventory_hostname in groups['master-servers']
 
@@ -183,6 +259,7 @@
 
 - name: 'Install pod network: flanneld'
   command: "kubectl --kubeconfig={{ kubernetes_conf_file }} apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml"
+<<<<<<< curell-kubernetes
   register: debug_output
   when: inventory_hostname in groups['master-servers']
 
@@ -205,6 +282,14 @@
       - "Stdout is: {{ debug_output.stdout }}"
   when: debug_enabled is defined and debug_enabled and debug_output.stdout is defined
 
+=======
+  when: inventory_hostname in groups['master-servers']
+
+- name: Wait for Master Node to be ready
+  shell: "NODES_READY=0; while [ $NODES_READY -lt 1 ]; do NODES_READY=1; for stat in $(kubectl --kubeconfig {{ kubernetes_conf_file }} get nodes | grep -v NAME | awk '{ print $2 }'); do if [ $stat != 'Ready' ]; then NODES_READY=0; echo -n .; sleep 1; fi done; done;"
+  when: "inventory_hostname in groups['master-servers']"
+
+>>>>>>> Implemented GlusterFS
 # By default the cluster will not scehdule pods on the master for security reasons.
 # The below task removes that restriction.
 - name: 'Remove master taint from master'
@@ -212,6 +297,7 @@
   register: debug_output
   when: inventory_hostname in groups['master-servers']
 
+<<<<<<< curell-kubernetes
 - name: Debug Output
   debug:
     msg:
@@ -254,6 +340,19 @@
       - "Command is: {{ debug_output.cmd }}"
       - "Stdout is: {{ debug_output.stdout }}"
   when: debug_enabled is defined and debug_enabled and debug_output.stdout is defined
+=======
+- name: 'Install MetalLB LoadBalancer'
+  command: 'kubectl --kubeconfig={{ kubernetes_conf_file }} apply -f https://raw.githubusercontent.com/google/metallb/v0.3.1/manifests/metallb.yaml'
+  when: inventory_hostname in groups['master-servers']
+
+- name: 'Apply MetalLB Config'
+  command: 'kubectl --kubeconfig={{ kubernetes_conf_file }} apply -f {{ kube_dir }}/metallb.yml'
+  when: inventory_hostname in groups['master-servers']
+
+- name: Wait for system pods to be ready
+  shell: "PODS_READY=0; while [ $PODS_READY -lt 1 ]; do PODS_READY=1; for stat in $(kubectl --kubeconfig {{ kubernetes_conf_file }} get pods -n kube-system | grep -v NAME | awk '{ print $3 }' | cut -d'/' -f 1); do if [ $stat == '0' ]; then PODS_READY=0; echo -n .; sleep 1; fi done; done;"
+  when: inventory_hostname in groups['master-servers']
+>>>>>>> Implemented GlusterFS
 
 - name: 'Join Kubernetes cluster'
   command: "{{ hostvars[item].kube_join_cluster_cmd.stdout }}"
@@ -261,6 +360,7 @@
   when: "inventory_hostname in groups['nodes']"
   with_items: "{{ groups['master-servers'] }}"
 
+<<<<<<< curell-kubernetes
 - name: Debug Output
   debug:
     msg:
@@ -298,6 +398,16 @@
       - "Stdout is: {{ debug_output.stdout }}"
   when: debug_enabled is defined and debug_enabled and debug_output.stdout is defined
 
+=======
+- name: Wait for Nodes to Register
+  shell: "while [ $(kubectl --kubeconfig {{ kubernetes_conf_file }} get nodes | wc -l) -lt {{ groups['all'] | length + 1}} ]; do echo -n .; done;"
+  when: inventory_hostname in groups['master-servers']
+
+- name: Wait for Nodes to be ready
+  shell: "NODES_READY=0; while [ $NODES_READY -lt 1 ]; do NODES_READY=1; for stat in $(kubectl --kubeconfig {{ kubernetes_conf_file }} get nodes | grep -v NAME | awk '{ print $2 }'); do if [ $stat != 'Ready' ]; then NODES_READY=0; echo -n .; sleep 1; fi done; done;"
+  when: "inventory_hostname in groups['master-servers']"
+
+>>>>>>> Implemented GlusterFS
 - name: 'Label masters'
   command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" label nodes {{ item }} role=server'
   with_items: "{{ groups['master-servers'] }}"
@@ -317,6 +427,7 @@
   register: debug_output
   when: inventory_hostname in groups['master-servers']
 
+<<<<<<< curell-kubernetes
 - name: Debug Output
   debug:
     msg:
@@ -324,6 +435,8 @@
       - "Stdout is: {{ debug_output.stdout }}"
   when: debug_enabled is defined and debug_enabled and debug_output.stdout is defined
 
+=======
+>>>>>>> Implemented GlusterFS
 - name: 'Label secondary servers'
   command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" label nodes {{ item }} role=server'
   with_items: "{{ groups['servers'] }}"

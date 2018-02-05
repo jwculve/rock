@@ -65,6 +65,7 @@ spec:
         - name: {{ logstash_pv_data }}
           persistentVolumeClaim:
             claimName: {{ logstash_pv_data }}
+<<<<<<< curell-kubernetes:playbooks/roles/logstash/templates/deploy.yml.j2
         - name: logstash-pipeline
           configMap:
             name: logstash-pipeline
@@ -75,6 +76,11 @@ spec:
               path: kafka-fsf.conf
             - key: kafka-suricata.conf
               path: kafka-suricata.conf
+=======
+        - name: {{ logstash_pv_pipeline }}
+          persistentVolumeClaim:
+            claimName: {{ logstash_pv_pipeline }}-claim
+>>>>>>> Implemented GlusterFS:playbooks/roles/logstash/templates/logstash-deploy.yml.j2
         - name: {{ logstash_pv_logs }}
           persistentVolumeClaim:
             claimName: {{ logstash_pv_logs }}

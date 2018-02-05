@@ -4,7 +4,11 @@ kind: MasterConfiguration
 #  config:
 #    mode: ipvs
 networking:
+<<<<<<< curell-kubernetes
   podSubnet: 10.244.0.0/16
+=======
+  podSubnet: 192.168.0.0/16
+>>>>>>> Implemented GlusterFS
 apiServerExtraArgs:
 #  feature-gates: "MountPropagation=true,PersistentLocalVolumes=true,SupportIPVSProxyMode=true,VolumeScheduling=true"
 feature-gates: "MountPropagation=true,PersistentLocalVolumes=true,VolumeScheduling=true"

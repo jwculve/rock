@@ -62,6 +62,7 @@
     - log4j2.properties
 
 - name: Flush Deployments
+<<<<<<< curell-kubernetes
   shell: |
     kubectl --kubeconfig="{{ kubernetes_conf_file }}" delete -f {{ elastic_dir }}/{{ item }}.yml
     while [ $(kubectl --kubeconfig="{{ kubernetes_conf_file }}" get -f {{ elastic_dir }}/{{ item }}.yml | tail -n +2 | wc -l) != '0' ]; do
@@ -70,6 +71,23 @@
     done;
     sleep 5;
   with_items:
+=======
+  command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" delete -f {{ elastic_dir }}/{{ item }}.yml'
+  with_items:
+    - pvc-data
+    - es-master
+    - es-discovery-svc
+    - es-svc
+#    - es-client
+#    - es-datas
+  ignore_errors: true
+
+- name: Deploy
+  command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" create -f {{ elastic_dir }}/{{ item }}.yml'
+  with_items:
+    - pvc-data
+    - es-master
+>>>>>>> Implemented GlusterFS
     - es-discovery-svc
     - es-svc
     - es-master

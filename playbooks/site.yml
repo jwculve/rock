@@ -27,7 +27,16 @@
 - hosts: kubernetes
   roles:
     - kubernetes
+<<<<<<< curell-kubernetes
   #gather_facts: no
+=======
+  gather_facts: no
+
+- hosts: gluster
+  roles:
+    - gluster
+  gather_facts: no
+>>>>>>> Implemented GlusterFS
 
 - hosts: gluster
   roles:

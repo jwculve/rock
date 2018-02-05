@@ -10,15 +10,23 @@
                 "{{ hostvars[host].inventory_hostname }}"
               ],
               "storage": [
+<<<<<<< curell-kubernetes
                 "{{ hostvars[host].ansible_default_ipv4.address }}"
+=======
+                "{{ hostvars[host].ansible_default_ipv4.address}}"
+>>>>>>> Implemented GlusterFS
               ]
             },
             "zone": 1
           },
           "devices": [
+<<<<<<< curell-kubernetes
 {% for dev in hostvars[host].data_disk_devices %}
             "{{ dev }}"
 {% endfor%}
+=======
+            "/dev/sdb"
+>>>>>>> Implemented GlusterFS
           ]
         }{% if not loop.last %},{% endif %}
 {% endfor %}
