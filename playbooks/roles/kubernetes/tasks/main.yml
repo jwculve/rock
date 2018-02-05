@@ -356,7 +356,10 @@
 
 - name: 'Join Kubernetes cluster'
   command: "{{ hostvars[item].kube_join_cluster_cmd.stdout }}"
+<<<<<<< curell-kubernetes
   register: debug_output
+=======
+>>>>>>> Fixed GIT dumbassery
   when: "inventory_hostname in groups['nodes']"
   with_items: "{{ groups['master-servers'] }}"
 

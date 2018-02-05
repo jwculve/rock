@@ -63,6 +63,7 @@
 
 - name: Flush Deployments
 <<<<<<< curell-kubernetes
+<<<<<<< curell-kubernetes
   shell: |
     kubectl --kubeconfig="{{ kubernetes_conf_file }}" delete -f {{ elastic_dir }}/{{ item }}.yml
     while [ $(kubectl --kubeconfig="{{ kubernetes_conf_file }}" get -f {{ elastic_dir }}/{{ item }}.yml | tail -n +2 | wc -l) != '0' ]; do
@@ -72,6 +73,8 @@
     sleep 5;
   with_items:
 =======
+=======
+>>>>>>> Fixed GIT dumbassery
   command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" delete -f {{ elastic_dir }}/{{ item }}.yml'
   with_items:
     - pvc-data
@@ -87,6 +90,7 @@
   with_items:
     - pvc-data
     - es-master
+<<<<<<< curell-kubernetes
 >>>>>>> Implemented GlusterFS
     - es-discovery-svc
     - es-svc
@@ -125,5 +129,16 @@
   with_items:
     - es-discovery-svc
     - es-svc
+=======
+    - es-discovery-svc
+    - es-svc
+#    - es-client
+#    - es-datas
+
+- name: Wait for deployment to finish
+  command: 'kubectl --kubeconfig="{{ kubernetes_conf_file }}" rollout status deployment/{{ item }}'
+  with_items:
+    - es-master
+>>>>>>> Fixed GIT dumbassery
 #    - es-client
 #    - es-data
