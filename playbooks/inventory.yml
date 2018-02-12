@@ -67,16 +67,16 @@ all:
 
         sensors:
 
+          vars:
+            data_disk_devices:
+            - /dev/sdb
+            home_net: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
+            bro_interface: ens224
+
           hosts:
             rocksensor1.lan:
               ansible_hostname: rocksensor1.lan
               ansible_connection: ssh
-
-              vars:
-                data_disk_devices:
-                - /dev/sdb
-                home_net: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
-                bro_interface: ens224
 
         servers:
 
