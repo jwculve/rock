@@ -36,6 +36,7 @@
   delegate_to: localhost
   when: selinux.changed
 
+# TODO: Need to look into what this is doing
 - name: DEV Insert resolv.conf
   lineinfile:
     path: /etc/resolv.conf
