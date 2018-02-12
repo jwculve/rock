@@ -3,7 +3,7 @@
 ######################################################
 ---
 
-- name: "Create config directory"
+- name: "Create Bro config directory"
   file:
     path: "{{ bro_dir }}"
     state: directory
