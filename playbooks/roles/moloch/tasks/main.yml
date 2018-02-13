@@ -62,7 +62,7 @@
     owner: "{{ rock_data_user }}"
     group: "{{ rock_data_group }}"
 
-- name: 'Build moloch image (v{{ moloch_tag }})'
+- name: 'Build moloch image ({{ moloch_tag }})'
   docker_image:
     name: "{{ moloch_image }}:{{ moloch_tag }}"
     pull: yes
@@ -81,15 +81,16 @@
 
 - block:
   - name: "Clean up kube configmap"
-    command: "kubectl --kubeconfig={{ kube_config }} delete configmap {{ moloch_config_map }}"
+    command: "kubectl --kubeconfig={{ kubernetes_conf_file }} delete configmap {{ moloch_config_map }}"
   - name: "Clean up kube for deployment "
-    command: "kubectl --kubeconfig={{ kube_config }} delete -f {{ moloch_dir }}/etc/{{ item }}.yml"
+    command: "kubectl --kubeconfig={{ kubernetes_conf_file }} delete -f {{ moloch_dir }}/etc/{{ item }}.yml"
     with_items:
       - pv-data
       - pvc-data
       - capture-service
       - viewer-service
       - moloch-deploy
+    removes: "{{ moloch_dir }}/etc/{{ item }}.yml"
   #- command: "kubectl --kubeconfig={{ kube_config }} delete -f {{ moloch_dir }}/etc/pvc-data.yml"
   #- command: "kubectl --kubeconfig={{ kube_config }} delete -f {{ moloch_dir }}/etc/capture-service.yml"
   #- command: "kubectl --kubeconfig={{ kube_config }} delete -f {{ moloch_dir }}/etc/viewer-service.yml"
@@ -97,12 +98,12 @@
   ignore_errors: true
 
 - name: "Create kube config"
-  command: 'kubectl --kubeconfig={{ kube_config }} create configmap {{ moloch_config_map }} --from-file {{ moloch_dir }}/etc/{{ item }}'
+  command: 'kubectl --kubeconfig={{ kubernetes_conf_file }} create configmap {{ moloch_config_map }} --from-file {{ moloch_dir }}/etc/{{ item }}'
   with_items:
     - config.ini
 
 - name: "Deploy moloch via kube"
-  command: "kubectl --kubeconfig={{ kube_config }} create -f {{ moloch_dir }}/etc/{{ item }}.yml"
+  command: "kubectl --kubeconfig={{ kubernetes_conf_file }} create -f {{ moloch_dir }}/etc/{{ item }}.yml"
   with_items:
     - pv-data
     - pvc-data

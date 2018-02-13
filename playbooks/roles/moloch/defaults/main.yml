@@ -3,15 +3,15 @@
 
 #### Moloch configuration variables ####
 moloch_image: 'moloch'
-moloch_tag: '0.50.0-1'
+moloch_tag: 'nightly'
 moloch_container_name: 'rock-moloch'
 moloch_port: "8005"
 moloch_monitor_int: 'lo'
 moloch_ip: '0.0.0.0'
 moloch_threads: "2"
 moloch_spi_indices: "3"
-moloch_elastic_url: "rock-elasticsearch:9200"
-moloch_web_url: "{{ moloch_container_name }}-viewer:{{ moloch_port}}"
+moloch_elastic_url: "rockserver1.lan:9200"
+moloch_web_url: "{{ inventory_hostname }}:{{ moloch_port}}"
 
 # User/Group and permissions for files copied
 moloch_user: "1000"
